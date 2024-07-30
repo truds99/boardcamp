@@ -20,3 +20,13 @@ export async function postCustomer(req, res) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
     }
 }
+
+export async function getCustomers(req, res) {
+    
+    try {    
+        const customers = await db.query(`SELECT * FROM customers;`)
+        res.send(customers.rows).status(httpStatus.OK);
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+}
