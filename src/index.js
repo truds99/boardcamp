@@ -1,7 +1,7 @@
 import express, { json } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connection from "./config/database.js";
+import db from "./config/database.js";
 import { gamesRouter } from "./routers/games-router.js";
 
 dotenv.config();
