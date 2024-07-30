@@ -20,3 +20,12 @@ export async function postGames(req, res) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
     }
 }
+
+export async function getGames(req, res) {
+    try {    
+        const games = await db.query(`SELECT * FROM games;`)
+        res.send(games.rows).status(httpStatus.OK);
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+}
