@@ -79,3 +79,31 @@ export async function getRentalsService() {
 
     return rentals;
 }
+
+export async function endRentalService(id){
+    if(isNaN(id) || id % 1 !== 0 || id <= 0) return null;
+    let rental = await db.query(`
+        SELECT * FROM rentals
+        WHERE id = $1;
+    `, [id])
+    if(!rental.rows.length) return null;
+
+    rental = rental.rows[0];
+    if(rental.returnDate) return null;
+    
+    const returnDate =  dayjs().format('YYYY-MM-DD');
+    const scheduledDate = dayjs(rental.rentDate).add(rental.daysRented, 'day');
+    const diffDays = dayjs(returnDate).diff(scheduledDate, 'day');
+    let delayFee = null;
+
+    if (diffDays > 0) delayFee = diffDays * rental.originalPrice;
+
+    await db.query(`
+        UPDATE rentals
+        SET "returnDate" = $1, "delayFee" = $2
+        WHERE id = $3;
+    `, [returnDate, delayFee, id]);
+
+    return true;
+
+}
