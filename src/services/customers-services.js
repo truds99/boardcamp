@@ -14,3 +14,18 @@ export async function postCustomerService({ name, cpf, phone }) {
 
     return true;
 }
+
+export async function getCustomersService() {
+    const customers = await db.query(`SELECT * FROM customers;`);
+    return customers.rows;
+}
+
+export async function getOneCustomerService(id){
+    if (isNaN(id) || id%1 !== 0 || id <= 0) return null; 
+    const customer = await db.query(`
+        SELECT * FROM customers
+        WHERE id = $1;
+    `, [id]);
+    if (!customer.rows.length) return null;
+    return customer.rows;
+}
