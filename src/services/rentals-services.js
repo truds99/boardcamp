@@ -107,3 +107,21 @@ export async function endRentalService(id){
     return true;
 
 }
+
+export async function deleteRentalService(id) {
+    if(isNaN(id) || id % 1 !== 0 || id <= 0) return null;
+
+    let rental = await db.query(`
+        SELECT * FROM rentals
+        WHERE id = $1;
+    `, [id])
+    if(!rental.rows.length) return null;
+    if(!rental.rows[0].returnDate) return null;
+
+    await db.query(`
+        DELETE FROM rentals
+        WHERE id = $1;
+    `, [id]);
+
+    return true;
+}
