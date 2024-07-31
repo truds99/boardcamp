@@ -1,21 +1,12 @@
 import db from "../config/database.js";
 import httpStatus from "http-status";
+import { postCustomerService } from "../services/customers-services.js";
 
 export async function postCustomer(req, res) {
-    const { name, cpf, phone } = req.body;
-
     try {
-        const { rowCount } = await db.query(`
-            SELECT * FROM customers
-            WHERE cpf = $1;
-        `, [cpf]);
-        if (rowCount > 0) return res.sendStatus(httpStatus.CONFLICT)
-        
-        await db.query(`
-            INSERT INTO customers (name, cpf, phone)
-            VALUES ($1, $2, $3);
-        `, [name, cpf, phone])
-        res.sendStatus(httpStatus.CREATED);
+        const result = await postCustomerService(req.body);
+        if (result) return res.sendStatus(httpStatus.OK);
+        res.sendStatus(400);
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
     }
