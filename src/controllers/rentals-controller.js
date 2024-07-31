@@ -91,4 +91,36 @@ export async function getRentals(req, res) {
     }
 }
 
+export async function endRental(req, res) {
+    const id = Number(req.params.id);
+    if(isNaN(id) || id % 1 !== 0 || id <= 0) return res.sendStatus(httpStatus.BAD_REQUEST);
+    
+     try {
+        let rental = await db.query(`
+            SELECT * FROM rentals
+            WHERE id = $1;
+        `, [id])
+        if(!rental.rows.length) return res.sendStatus(httpStatus.NOT_FOUND);
+
+        rental = rental.rows[0];
+       if(rental.returnDate) return res.sendStatus(httpStatus.UNPROCESSABLE_ENTITY);
+        
+        const returnDate =  dayjs().format('YYYY-MM-DD');
+        const scheduledDate = dayjs(rental.rentDate).add(rental.daysRented, 'day');
+        const diffDays = dayjs(returnDate).diff(scheduledDate, 'day');
+        let delayFee = null;
+
+        if (diffDays > 0) delayFee = diffDays * rental.originalPrice;
+    
+        await db.query(`
+            UPDATE rentals
+            SET "returnDate" = $1, "delayFee" = $2
+            WHERE id = $3;
+        `, [returnDate, delayFee, id]);
+
+        res.sendStatus(httpStatus.OK);
+     } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+     }
+}
 
