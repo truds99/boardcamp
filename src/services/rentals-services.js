@@ -37,3 +37,45 @@ export async function postRentalService({ customerId, gameId, daysRented }) {
 
         return true;
 }
+
+export async function getRentalsService() {
+    let rentals = await db.query(`
+        SELECT 
+            rentals.id,
+            rentals."customerId",
+            rentals."gameId",
+            rentals."rentDate",
+            rentals."daysRented",
+            rentals."returnDate",
+            rentals."originalPrice",
+            rentals."delayFee",
+            customers.id AS "customerId",
+            customers.name AS "customerName",
+            games.id AS "gameId",
+            games.name AS "gameName"
+        FROM rentals
+        JOIN customers ON rentals."customerId" = customers.id
+        JOIN games ON rentals."gameId" = games.id
+    `, );
+    
+    rentals = rentals.rows.map(elm => ({
+        id: elm.id,
+        customerId: elm.customerId,
+        gameId: elm.gameId,
+        rentDate: elm.rentDate,
+        daysRented: elm.daysRented,
+        returnDate: elm.returnDate,
+        originalPrice: elm.originalPrice,
+        delayFee: elm.delayFee,
+        customer: {
+            id: elm.customerId,
+            name: elm.customerName
+        },
+        game: {
+            id: elm.gameId,
+            name: elm.gameName
+        }
+    }));
+
+    return rentals;
+}
