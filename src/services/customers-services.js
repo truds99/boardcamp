@@ -1,31 +1,23 @@
 import db from "../config/database.js";
+import { getCustomerByCpfRep, getCustomerByIdRep, getCustomersRep, insertCustomerRep } from "../repositories/customers-repository.js";
 
 export async function postCustomerService({ name, cpf, phone }) {
-    const { rowCount } = await db.query(`
-        SELECT * FROM customers
-        WHERE cpf = $1;
-    `, [cpf]);
+    const { rowCount } = await getCustomerByCpfRep(cpf);
     if (rowCount > 0) return null;
     
-    await db.query(`
-        INSERT INTO customers (name, cpf, phone)
-        VALUES ($1, $2, $3);
-    `, [name, cpf, phone]);
+    await insertCustomerRep(name, cpf, phone);
 
     return true;
 }
 
 export async function getCustomersService() {
-    const customers = await db.query(`SELECT * FROM customers;`);
+    const customers = await getCustomersRep();
     return customers.rows;
 }
 
 export async function getOneCustomerService(id){
     if (isNaN(id) || id%1 !== 0 || id <= 0) return null; 
-    const customer = await db.query(`
-        SELECT * FROM customers
-        WHERE id = $1;
-    `, [id]);
+    const customer = await getCustomerByIdRep(id);
     if (!customer.rows.length) return null;
     return customer.rows;
 }

@@ -17,7 +17,7 @@ export async function postCustomer(req, res) {
 
 export async function getCustomers(req, res) {
     try {    
-        const customers = getCustomersService();
+        const customers = await getCustomersService();
         if (customers) return res.send(customers).status(200);
         res.sendStatus(400);
     } catch (error) {
