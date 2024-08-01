@@ -1,21 +1,17 @@
 import db from "../config/database.js";
+import { createGameRep, getGameByNameRep, getGamesRep } from "../repositories/games-repository.js";
 
 export async function postGamesService({ name, image, stockTotal, pricePerDay }) {
-    const { rowCount } = await db.query(`
-        SELECT * FROM games
-        WHERE name = $1;
-    `, [name]);
-    if (rowCount > 0) return null;
     
-    await db.query(`
-        INSERT INTO games (name, image, "stockTotal", "pricePerDay")
-        VALUES ($1, $2, $3, $4);
-    `, [name, image, stockTotal, pricePerDay]);
+    const gameExistent = await getGameByNameRep(name);
+    if (gameExistent.rowCount) return null;
+    
+    await createGameRep(name, image, stockTotal, pricePerDay);
 
     return true;
 }
 
 export async function getGamesService() {
-    const games = await db.query(`SELECT * FROM games;`)
-    return games.rows;
+    const games = await getGamesRep();
+    return games;
 }

@@ -39,7 +39,7 @@ export async function postRentalService({ customerId, gameId, daysRented }) {
 }
 
 export async function getRentalsService() {
-    let rentals = await db.query(`
+    const rentals = await db.query(`
         SELECT 
             rentals.id,
             rentals."customerId",
@@ -58,26 +58,7 @@ export async function getRentalsService() {
         JOIN games ON rentals."gameId" = games.id
     `, );
     
-    rentals = rentals.rows.map(elm => ({
-        id: elm.id,
-        customerId: elm.customerId,
-        gameId: elm.gameId,
-        rentDate: elm.rentDate,
-        daysRented: elm.daysRented,
-        returnDate: elm.returnDate,
-        originalPrice: elm.originalPrice,
-        delayFee: elm.delayFee,
-        customer: {
-            id: elm.customerId,
-            name: elm.customerName
-        },
-        game: {
-            id: elm.gameId,
-            name: elm.gameName
-        }
-    }));
-
-    return rentals;
+    return rentals.rows;
 }
 
 export async function endRentalService(id){
