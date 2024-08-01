@@ -1,21 +1,12 @@
 import db from "../config/database.js";
 import httpStatus from "http-status";
+import { postGamesService } from "../services/games-services.js";
 
 export async function postGames(req, res) {
-    const { name, image, stockTotal, pricePerDay } = req.body;
-
     try {
-        const { rowCount } = await db.query(`
-            SELECT * FROM games
-            WHERE name = $1;
-        `, [name]);
-        if (rowCount > 0) return res.sendStatus(httpStatus.CONFLICT)
-        
-        await db.query(`
-            INSERT INTO games (name, image, "stockTotal", "pricePerDay")
-            VALUES ($1, $2, $3, $4);
-        `, [name, image, stockTotal, pricePerDay])
-        res.sendStatus(httpStatus.CREATED);
+        const result = await postGamesService(req.body);
+        if (result) return res.sendStatus(200);
+        res.sendStatus(400);
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
     }

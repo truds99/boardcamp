@@ -1,4 +1,3 @@
-import db from "../config/database.js";
 import httpStatus from "http-status";
 import { 
     getCustomersService, 
