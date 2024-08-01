@@ -1,4 +1,3 @@
-import db from "../config/database.js";
 import { createGameRep, getGameByNameRep, getGamesRep } from "../repositories/games-repository.js";
 
 export async function postGamesService({ name, image, stockTotal, pricePerDay }) {

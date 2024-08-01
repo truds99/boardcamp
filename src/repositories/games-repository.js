@@ -21,3 +21,10 @@ export async function getGamesRep() {
     return games.rows;
 }
  
+export async function getGameByIdRep(id) {
+    const game = await db.query(`
+        SELECT * FROM games
+        WHERE id = $1;
+    `, [id]);
+    return game;
+}
