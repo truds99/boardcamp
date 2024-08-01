@@ -1,6 +1,5 @@
-import db from "../config/database.js";
 import httpStatus from "http-status";
-import { postGamesService } from "../services/games-services.js";
+import { postGamesService, getGamesService } from "../services/games-services.js";
 
 export async function postGames(req, res) {
     try {
@@ -14,8 +13,9 @@ export async function postGames(req, res) {
 
 export async function getGames(req, res) {
     try {    
-        const games = await db.query(`SELECT * FROM games;`)
-        res.send(games.rows).status(httpStatus.OK);
+        const games = await getGamesService();
+        if (games) return res.send(games).status(200);
+        res.sendStatus(400);
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
     }

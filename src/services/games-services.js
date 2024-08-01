@@ -14,3 +14,8 @@ export async function postGamesService({ name, image, stockTotal, pricePerDay })
 
     return true;
 }
+
+export async function getGamesService() {
+    const games = await db.query(`SELECT * FROM games;`)
+    return games.rows;
+}
