@@ -3,11 +3,12 @@ import { createGameRep, getGameByNameRep, getGamesRep } from "../repositories/ga
 export async function postGamesService({ name, image, stockTotal, pricePerDay }) {
     
     const gameExistent = await getGameByNameRep(name);
-    if (gameExistent.rowCount) return null;
+    if (gameExistent.rowCount) throw {
+        type: 'conflict',
+        message: 'this game already exists'
+    }
     
     await createGameRep(name, image, stockTotal, pricePerDay);
-
-    return true;
 }
 
 export async function getGamesService() {

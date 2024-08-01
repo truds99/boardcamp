@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import db from "../config/database.js";
 import { getGameByIdRep } from "../repositories/games-repository.js";
 import { getCustomerByIdRep } from "../repositories/customers-repository.js";
 import { deleteRentalRep, getOpenedRentalsRep, getRentalByIdRep, getRentalsRep, insertRentalRep, updateRentalRep } from "../repositories/rentals-repository.js";
