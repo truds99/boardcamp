@@ -3,11 +3,13 @@ import { postRentalService, getRentalsService, endRentalService, deleteRentalSer
 
 export async function postRental(req, res) {
     try {
-        const result = await postRentalService(req.body);
-        if (result) return res.sendStatus(httpStatus.CREATED);
-        res.sendStatus(400);
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+        await postRentalService(req.body);
+        res.sendStatus(httpStatus.CREATED);
+
+    } catch (e) {
+        if (e.type === 'not_found') return res.status(httpStatus.NOT_FOUND).send(e.message);
+        if (e.type === 'unprocessable_entity') return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(e.message);
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e.message);
     }
 }
 
@@ -33,19 +35,21 @@ export async function getRentals(req, res) {
             }
         }));
         res.send(rentals).status(httpStatus.OK);
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+    } catch (e) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e.message);
     }
 }
 
 export async function endRental(req, res) {
     const id = Number(req.params.id);
     try {
-        const result = await endRentalService(id);
-        if (result) return res.sendStatus(httpStatus.OK);
-        res.sendStatus(400);
-     } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+        await endRentalService(id);
+        res.sendStatus(httpStatus.OK);
+     } catch (e) {
+        if (e.type === 'not_found') return res.status(httpStatus.NOT_FOUND).send(e.message);
+        if (e.type === 'unprocessable_entity') return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(e.message);
+        if (e.type === 'bad_request') return res.status(httpStatus.BAD_REQUEST).send(e.message);
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e.message);
      }
 }
 
@@ -53,11 +57,12 @@ export async function deleteRental(req, res) {
     const id = Number(req.params.id);
     
      try {
-        const result = await deleteRentalService(id);
-        if (result) return res.sendStatus(httpStatus.OK);
-        res.sendStatus(400);
-     } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
+        await deleteRentalService(id);
+        res.sendStatus(httpStatus.OK);
+     } catch (e) {
+        if (e.type === 'not_found') return res.status(httpStatus.NOT_FOUND).send(e.message);
+        if (e.type === 'bad_request') return res.status(httpStatus.BAD_REQUEST).send(e.message);
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e.message);
      }
 }
 
